@@ -38,7 +38,6 @@ $(OBJDIR)/reloader.elf: $(OBJDIR) $(OBJS) $(LDFILE)
 $(OBJDIR)/reloader.hex: $(OBJDIR)/reloader.elf
 	$(CROSS_COMPILE)objcopy -O ihex $< $@
 
-export PYTHONPATH := $(PWD)/../tools/nrfutil:$(PWD)/../tools/intelhex
 $(OBJDIR)/reloader.zip : $(OBJDIR)/reloader.hex
 	python3 -m nordicsemi dfu genpkg --dev-type 0x0052 --application $< $@
 
