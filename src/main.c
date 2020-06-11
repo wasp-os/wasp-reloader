@@ -9,7 +9,22 @@
 #include "board.h"
 #include "flash.h"
 #include "st7789.h"
+#include "util.h"
 #include "wdt.h"
+
+void panic(void)
+{
+#ifdef CONFIG_ST7789
+    st7789_state(-1);
+#endif
+    reboot();
+}
+
+void reboot(void)
+{
+    while (true)
+	    /* stop feeding the dog and we'll automatically reboot */;
+}
 
 void report_progress(int percent)
 {
@@ -35,9 +50,7 @@ int main()
 #endif
 
     flash_all();
-
-    while (true)
-	    /* stop feeding the dog and we'll automatically reboot */;
+    reboot();
 
     return 0;
 }

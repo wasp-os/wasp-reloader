@@ -228,6 +228,13 @@ void st7789_state(int percent_complete)
   const uint16_t bg = 0;
   uint16_t color = bg;
 
+  if (percent_complete < 0)
+      fg = 0xf800;
+  else if (percent_complete < 100)
+      fg = 0x033f;
+  else
+      fg = 0xffff;
+
   for (int i=0; i<sizeof(rle); i++) {
     uint8_t rl = rle[i];
     while (rl) {
@@ -247,7 +254,7 @@ void st7789_state(int percent_complete)
 	if (bottomclip) {
 	  memset(linebuffer+2*(240-64), 0, 64*2);
 	}
-	if (y >= (165-percent_complete)) {
+	if (percent_complete >= 1 && y >= (165-percent_complete)) {
 	  fg = 0xffff;
 	}
 

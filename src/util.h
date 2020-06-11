@@ -8,6 +8,8 @@
 
 #define lengthof(x) (sizeof(x) / sizeof((x)[0]))
 
+void panic(void);
+void reboot(void);
 void report_progress(int percent);
 
 #endif /* RELOADER_UTIL_H__ */
