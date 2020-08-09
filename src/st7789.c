@@ -3,12 +3,17 @@
  * Copyright (C) 2020 Daniel Thompson
  */
 
-#include "st7789.h"
-
 #include <string.h>
 
 #include <nrf_gpio.h>
 #include <nrf_spi.h>
+
+#include "board.h"
+#include "st7789.h"
+
+#ifndef CONFIG_ST7789_BACKLIGHT
+#define CONFIG_ST7789_BACKLIGHT 14
+#endif
 
 #define SPIx NRF_SPI0
 #define SPI_MODE NRF_SPI_MODE_3
@@ -17,7 +22,7 @@
 #define DISP_SS 25
 #define DISP_DC 18
 #define DISP_RESET 26
-#define BACKLIGHT 14 /* lowest level */
+#define BACKLIGHT CONFIG_ST7789_BACKLIGHT /* lowest level */
 
 static void spi_init(void)
 {
