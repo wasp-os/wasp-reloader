@@ -16,7 +16,7 @@ CFLAGS += \
 	  -Ilib/nrfx/mdk \
 	  -Ilib/nrfx/hal \
 	  -Isrc/boards/$(BOARD) -Isrc
-LDFLAGS += $(CFLAGS) -Wl,-Map=$(OBJDIR)/reloader.map -Lsrc -Llib/nrfx/mdk -Tnrf52832_xxaa.ld
+LDFLAGS += $(CFLAGS) -Wl,-Map=$(OBJDIR)/reloader.map -Lsrc -Llib/nrfx/mdk -T$(LDSCRIPT)
 
 APP = $(OBJDIR)/reloader.zip
 OBJS = main.o \
@@ -29,9 +29,8 @@ OBJS = main.o \
 OBJDIR = build-$(BOARD)
 OBJS := $(OBJS:%.o=$(OBJDIR)/%.o)
 
-
 all: $(APP)
-
+$(OBJDIR)/reloader.elf: LDSCRIPT = nrf52832_xxaa.ld
 $(OBJDIR)/reloader.elf: $(OBJDIR) $(OBJS) $(LDFILE)
 	$(CROSS_COMPILE)gcc $(LDFLAGS) $(OBJS) -o $@
 
@@ -39,6 +38,20 @@ $(OBJDIR)/reloader.hex: $(OBJDIR)/reloader.elf
 	$(CROSS_COMPILE)objcopy -O ihex $< $@
 
 $(OBJDIR)/reloader.zip : $(OBJDIR)/reloader.hex
+	python3 -m nordicsemi dfu genpkg --dev-type 0x0052 --application $< $@
+
+ifeq ($(BOARD),pinetime)
+all : $(OBJDIR)/reloader-mcuboot.zip
+endif
+
+$(OBJDIR)/reloader-mcuboot.elf: LDSCRIPT = nrf52832_xxaa_mcuboot.ld
+$(OBJDIR)/reloader-mcuboot.elf: $(OBJDIR) $(OBJS) $(LDFILE)
+	$(CROSS_COMPILE)gcc $(LDFLAGS) $(OBJS) -o $@
+
+$(OBJDIR)/reloader-mcuboot.hex: $(OBJDIR)/reloader-mcuboot.elf
+	$(CROSS_COMPILE)objcopy -O ihex $< $@
+
+$(OBJDIR)/reloader-mcuboot.zip : $(OBJDIR)/reloader-mcuboot.hex
 	python3 -m nordicsemi dfu genpkg --dev-type 0x0052 --application $< $@
 
 VPATH = src:lib/nrfx/drivers/src:lib/nrfx/mdk

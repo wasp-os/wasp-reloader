@@ -14,8 +14,8 @@ _app_ram_size  = _ram_size - _sd_ram;
 
 MEMORY
 {
-  PREFLASH (rx) : ORIGIN = _app_start, LENGTH = 512
-  FLASH (rx) : ORIGIN = _app_start + 512, LENGTH = _app_size - 512
+  PREFLASH (rx) : ORIGIN = 0x8020, LENGTH = 4K - 0x20
+  FLASH (rx) : ORIGIN = _app_start, LENGTH = _app_size
   RAM (rwx) : ORIGIN = _app_ram_start, LENGTH = _app_ram_size
   /*CODE_RAM (rwx) : ORIGIN = 0x800000, LENGTH = 0x10000*/
 }
