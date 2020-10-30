@@ -61,16 +61,19 @@ static void flash_segment(const struct segment *sg)
 
 retry:
     
-    /* TODO: Haven't got code to handle the UICR yet */
-    if (sg->start >= 0x1000000) {
-	progress(2 * sz);
-	return;
-    }
 
-    for (uint32_t addr = sg->start; addr < sg->end; addr += pagesz) {
+    if (sg->start < 0x1000000) {
+        for (uint32_t addr = sg->start; addr < sg->end; addr += pagesz) {
+	    nrf_wdt_reload_request_set(NRF_WDT, 0);
+	    nrfx_nvmc_page_erase(addr);
+	    progress(pagesz);
+	}
+    } else {
 	nrf_wdt_reload_request_set(NRF_WDT, 0);
-	nrfx_nvmc_page_erase(addr);
-	progress(pagesz);
+	/* special case for erasing the UICR */
+	if (sg->start >= 0x10001000 && sg->start < 0x10002000)
+	    nrfx_nvmc_uicr_erase();
+	progress(2 * sz);
     }
 
     for (uint32_t addr = sg->start; addr < sg->end; addr += 4) {
