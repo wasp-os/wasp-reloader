@@ -4,3 +4,6 @@
 [submodule "lib/CMSIS"]
 	path = lib/CMSIS
 	url = https://github.com/ARM-software/CMSIS_5/
+[submodule "lib/mcuboot"]
+	path = lib/mcuboot
+	url = https://github.com/mcu-tools/mcuboot

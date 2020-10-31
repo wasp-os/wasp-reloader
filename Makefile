@@ -48,10 +48,14 @@ $(OBJDIR)/reloader-mcuboot.elf: LDSCRIPT = nrf52832_xxaa_mcuboot.ld
 $(OBJDIR)/reloader-mcuboot.elf: $(OBJDIR) $(OBJS) $(LDFILE)
 	$(CROSS_COMPILE)gcc $(LDFLAGS) $(OBJS) -o $@
 
-$(OBJDIR)/reloader-mcuboot.hex: $(OBJDIR)/reloader-mcuboot.elf
-	$(CROSS_COMPILE)objcopy -O ihex $< $@
+$(OBJDIR)/reloader-mcuboot.bin: $(OBJDIR)/reloader-mcuboot.elf
+	$(CROSS_COMPILE)objcopy -O binary $< $@.tmp
+	lib/mcuboot/scripts/imgtool.py create \
+		--align 4 --version 1.0.0 \
+		--header-size 32 --slot-size 475136 --pad-header $@.tmp $@
+	$(RM) $@.tmp
 
-$(OBJDIR)/reloader-mcuboot.zip : $(OBJDIR)/reloader-mcuboot.hex
+$(OBJDIR)/reloader-mcuboot.zip : $(OBJDIR)/reloader-mcuboot.bin
 	python3 -m nordicsemi dfu genpkg --dev-type 0x0052 --application $< $@
 
 VPATH = src:lib/nrfx/drivers/src:lib/nrfx/mdk

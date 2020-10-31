@@ -18,37 +18,30 @@ Note: *wasp-reloader is tested using the [GNU-RM toolchain](https://developer.ar
 
 1. Use `hex2c.py` (from wasp-os `tools/` directory) to populate
    `src/boards/<boardname>/bootloader.h`
-2. `make`
-3. Deploy!
+2. `git submodule init --update`
+3. `make`
+4. Deploy!
 
 Status
 ------
 
- * Can replace MBR and softdevice with alternatives that are the same
-   size (or smaller).
- * Can replace the bootloader binary.
- * Does not update the UICR (which contains the bootloader entry point)
-
-The effect of this is that there are just enough features implemented
-to deliver updates which do not change the flash partitioning for
-the softdevice or bootloader.
-
-This features could easily be implemented but since they would require
-a different SoftDevice to test them that work hasn't taken place quite
-yet.
+ * Can replace MBR and softdevice with different versions.
+ * Can replace the wasp-bootloader binary.
+ * Can be used as an OTA upgrade to replace the PineTime factory
+   default bootloader (mcuboot) with wasp-bootloader.
 
 License
 -------
-   
-wasp-reloader program is free software: you can redistribute it and/or 
-modify it under the terms of the GNU Lesser General Public License as 
-published by the Free Software Foundation, either version 3 of the 
+
+wasp-reloader program is free software: you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation, either version 3 of the
 License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but 
-WITHOUT ANY WARRANTY; without even the implied warranty of 
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
-General Public License and GNU Lesser General Public License for more 
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License and GNU Lesser General Public License for more
 details.
 
 You should have received a copy of the GNU General Public License
