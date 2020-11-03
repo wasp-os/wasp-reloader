@@ -11,7 +11,12 @@
 #include <nrf_gpio.h>
 #include <nrf_wdt.h>
 
+#ifdef FACTORY
+#include "factory_image.h"
+#else
 #include "bootloader.h"
+#endif
+
 #include "util.h"
 #include "wdt.h"
 

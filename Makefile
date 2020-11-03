@@ -41,7 +41,7 @@ $(OBJDIR)/reloader.zip : $(OBJDIR)/reloader.hex
 	python3 -m nordicsemi dfu genpkg --dev-type 0x0052 --application $< $@
 
 ifeq ($(BOARD),pinetime)
-all : $(OBJDIR)/reloader-mcuboot.zip
+all : $(OBJDIR)/reloader-mcuboot.zip $(OBJDIR)/reloader-factory.zip
 endif
 
 $(OBJDIR)/reloader-mcuboot.elf: LDSCRIPT = nrf52832_xxaa_mcuboot.ld
@@ -58,6 +58,17 @@ $(OBJDIR)/reloader-mcuboot.bin: $(OBJDIR)/reloader-mcuboot.elf
 $(OBJDIR)/reloader-mcuboot.zip : $(OBJDIR)/reloader-mcuboot.bin
 	python3 -m nordicsemi dfu genpkg --dev-type 0x0052 --application $< $@
 
+FACTORY_OBJS = $(subst flash.o,factoryflash.o,$(OBJS))
+$(OBJDIR)/reloader-factory.elf: LDSCRIPT = nrf52832_xxaa_factory.ld
+$(OBJDIR)/reloader-factory.elf: $(OBJDIR) $(FACTORY_OBJS) $(LDFILE)
+	$(CROSS_COMPILE)gcc $(LDFLAGS) $(FACTORY_OBJS) -o $@
+
+$(OBJDIR)/reloader-factory.hex: $(OBJDIR)/reloader-factory.elf
+	$(CROSS_COMPILE)objcopy -O ihex $< $@
+
+$(OBJDIR)/reloader-factory.zip : $(OBJDIR)/reloader-factory.hex
+	python3 -m nordicsemi dfu genpkg --dev-type 0x0052 --application $< $@
+
 VPATH = src:lib/nrfx/drivers/src:lib/nrfx/mdk
 
 $(OBJDIR) :
@@ -65,6 +76,9 @@ $(OBJDIR) :
 
 $(OBJDIR)/%.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJDIR)/factoryflash.o : flash.c
+	$(CC) $(CFLAGS) -DFACTORY -c $< -o $@
 
 $(OBJDIR)/%.o : %.S
 	$(CC) $(CFLAGS) -c $< -o $@
