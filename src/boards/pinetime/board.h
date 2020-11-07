@@ -15,4 +15,7 @@
 #define CONFIG_WDT_BUTTON_PULL   (0)  // no pull up/down
 #define CONFIG_WDT_BUTTON_ENABLE (15)
 
+#define CONFIG_HAVE_SPINOR       (1)
+#define CONFIG_SPINOR_CS	 (5)
+
 #endif /* RELOADER_BOARD_PINETIME_H__ */

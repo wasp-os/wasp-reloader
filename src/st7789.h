@@ -13,6 +13,7 @@ enum {
 };
 
 void st7789_state(int state);
+void st7789_preinit(void);
 void st7789_init(void);
 void st7789_teardown(void);
 

@@ -8,6 +8,8 @@
 
 #include "board.h"
 #include "flash.h"
+#include "spi.h"
+#include "spinor.h"
 #include "st7789.h"
 #include "util.h"
 #include "wdt.h"
@@ -44,9 +46,20 @@ int main()
     wdt_init();
 
 #ifdef CONFIG_ST7789
-    st7789_init();
+    st7789_preinit();
 #else
     nrf_gpio_cfg_output(CONFIG_USR_LED);
+#endif
+#ifdef CONFIG_HAVE_SPINOR
+    spinor_preinit();
+#endif
+
+    spi_init();
+#ifdef CONFIG_ST7789
+    st7789_init();
+#endif
+#ifdef CONFIG_HAVE_SPINOR
+    spinor_init();
 #endif
 
     flash_all();
