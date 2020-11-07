@@ -19,6 +19,10 @@ void panic(void)
 #ifdef CONFIG_ST7789
     st7789_state(-1);
 #endif
+#ifdef CONFIG_HAVE_WDT_BUTTON
+    while (true)
+	wdt_feed(false);
+#endif
     reboot();
 }
 
