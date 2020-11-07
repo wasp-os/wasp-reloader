@@ -59,7 +59,7 @@ $(OBJDIR)/reloader-mcuboot.zip : $(OBJDIR)/reloader-mcuboot.bin
 	python3 -m nordicsemi dfu genpkg --dev-type 0x0052 --application $< $@
 
 FACTORY_OBJS = $(subst flash.o,factoryflash.o,$(OBJS))
-$(OBJDIR)/reloader-factory.elf: LDSCRIPT = nrf52832_xxaa_factory.ld
+$(OBJDIR)/reloader-factory.elf: LDSCRIPT = nrf52832_xxaa.ld
 $(OBJDIR)/reloader-factory.elf: $(OBJDIR) $(FACTORY_OBJS) $(LDFILE)
 	$(CROSS_COMPILE)gcc $(LDFLAGS) $(FACTORY_OBJS) -o $@
 

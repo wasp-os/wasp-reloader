@@ -55,6 +55,8 @@ SECTIONS
 
     .text :
     {
+        *(.rodata.segment*)
+
         *(.text*)
 
         KEEP(*(.init))
