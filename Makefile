@@ -20,6 +20,7 @@ LDFLAGS += $(CFLAGS) -Wl,-Map=$(OBJDIR)/reloader.map -Lsrc -Llib/nrfx/mdk -T$(LD
 
 APP = $(OBJDIR)/reloader.zip
 OBJS = main.o \
+       blit.o \
        flash.o \
        spi.o \
        spinor.o \

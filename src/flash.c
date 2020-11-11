@@ -11,14 +11,15 @@
 #include <nrf_gpio.h>
 #include <nrf_wdt.h>
 
+#include "blit.h"
+#include "util.h"
+#include "wdt.h"
+
 #ifdef FACTORY
 #include "factory_image.h"
 #else
 #include "bootloader.h"
 #endif
-
-#include "util.h"
-#include "wdt.h"
 
 static int percent_complete;
 static uint32_t bytes_processed;
@@ -113,4 +114,8 @@ void flash_all(void)
 	
     for (int i=0; i<lengthof(segments); i++)
         flash_segment(segments + i);
+
+#ifdef FACTORY
+    blit_write_logo();
+#endif
 }

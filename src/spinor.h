@@ -9,7 +9,9 @@
 #include <stdint.h>
 
 uint32_t spinor_page_size_get(void);
-int spinor_page_erase(uint32_t addr);
+uint32_t spinor_sector_size_get(void);
+void spinor_sector_erase(uint32_t addr);
+void spinor_burst_write(uint32_t addr, const uint8_t *buf, uint32_t buflen);
 void spinor_word_write(uint32_t addr, uint32_t value);
 void spinor_preinit(void);
 void spinor_init(void);
