@@ -89,3 +89,5 @@ $(OBJDIR)/%.o : %.S
 .PHONY: clean
 clean:
 	$(RM) -r $(OBJDIR)
+
+$(OBJS) factoryflash.o : $(wildcard src/boards/$(BOARD)/*.h)
