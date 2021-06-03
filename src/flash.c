@@ -11,7 +11,9 @@
 #include <nrf_gpio.h>
 #include <nrf_wdt.h>
 
+#include "board.h"
 #include "blit.h"
+#include "spinor.h"
 #include "util.h"
 #include "wdt.h"
 
@@ -59,14 +61,64 @@ static uint32_t check_segment(const struct segment *sg)
     return sz;
 }
 
+#ifdef CONFIG_HAVE_SPINOR
+static void spinor_segment(const struct segment *sg)
+{
+    uint32_t pagesz = spinor_sector_size_get();
+    uint32_t sz;
+    int retries = 5;
+
+retry:
+
+    for (uint32_t addr = sg->start; addr < sg->end; addr += pagesz) {
+	nrf_wdt_reload_request_set(NRF_WDT, 0);
+	spinor_sector_erase(addr & 0x3fffffff);
+	progress(pagesz);
+    }
+
+    for (uint32_t addr = sg->start; addr < sg->end; addr += pagesz) {
+	nrf_wdt_reload_request_set(NRF_WDT, 0);
+
+	sz = sg->end - addr;
+	if (sz > pagesz)
+		sz = pagesz;
+
+	spinor_burst_write(addr & 0x3fffffff,
+			   (uint8_t *) (sg->data + (addr - sg->start)), sz);
+	progress(sz);
+    }
+
+
+#ifdef TODO
+    sz = sg->end - sg->start;
+    if (0 != memcmp((void *) sg->start, sg->data, sz)) {
+	progress(-(2 * sz));
+	if (retries--)
+	    goto retry;
+
+	// We're in big trouble... the system is probably bricked but we
+	// don't seem to be able to do anything about it. Better to reboot
+	// and hope than to sit here wearing out the flash!
+	panic();
+    }
+#endif
+}
+#endif // CONFIG_HAVE_SPINOR
+
 static void flash_segment(const struct segment *sg)
 {
     uint32_t pagesz = nrfx_nvmc_flash_page_size_get();
     uint32_t sz = sg->end - sg->start;
     int retries = 5;
 
+#ifdef CONFIG_HAVE_SPINOR
+    if (sg->start >= 0x40000000) {
+	spinor_segment(sg);
+	return;
+    }
+#endif
+
 retry:
-    
 
     if (sg->start < 0x1000000) {
         for (uint32_t addr = sg->start; addr < sg->end; addr += pagesz) {
@@ -114,8 +166,4 @@ void flash_all(void)
 	
     for (int i=0; i<lengthof(segments); i++)
         flash_segment(segments + i);
-
-#ifdef FACTORY
-    blit_write_logo();
-#endif
 }
